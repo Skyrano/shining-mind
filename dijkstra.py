@@ -112,6 +112,13 @@ def CleanList(matrix,liste,number):
     return liste
 
 
+def RandomCoord(matrix):
+    tailleX,tailleY = matrix.shape
+    rdX,rdY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
+    while matrix[rdX][rdY] != 0:
+        rdX,rdY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
+    return rdX,rdY
+
 
 def ConstructMaze(tailleX,tailleY):
     if tailleX%2 == 0:
@@ -119,9 +126,7 @@ def ConstructMaze(tailleX,tailleY):
     if tailleY%2 == 0:
         tailleY += 1
     matrix = MosaicMap(InitMap(tailleX,tailleY,-1))
-    stX,stY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
-    while matrix[stX][stY] != 0:
-        stX,stY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
+    stX,stY = RandomCoord(matrix)
     stack = [(stX,stY)]
     x,y = stX,stY
     matrix[x][y]=1
@@ -168,12 +173,9 @@ def InitMurs(matrix,murs):
 
 
 def Dijkstra(grille):
-    x,y = grille.shape
-    stX,stY = random.randint(0,x-1), random.randint(0,y-1)
-    while grille[stX][stY] != 0:
-        stX,stY = random.randint(0,x-1), random.randint(0,y-1)
     counter = 1
     matrix = numpy.copy(grille)
+    stX,stY = RandomCoord(matrix)
     matrix[stX][stY] = counter
     zeros = MatrixCount(matrix,0)
     liste = [(stX,stY)]
@@ -202,7 +204,7 @@ def Pathfinding(grille,mapping,x,y):
         matrix[x][y] = trace
         x,y = x_next,y_next
     matrix[x][y] = 1
-    return matrix    
+    return matrix   
 
 
 
@@ -213,7 +215,8 @@ print("Maze : ",maze)
 mapping = (Dijkstra(maze))
 print("Mappinp : ",mapping)
 
-path = Pathfinding(maze,mapping,1,1)
+x,y = RandomCoord(maze)
+path = Pathfinding(maze,mapping,x,y)
 print("Path : ",path)
 
 MatrixPrinting(path)
