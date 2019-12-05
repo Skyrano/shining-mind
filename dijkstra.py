@@ -59,23 +59,24 @@ def AdjacenceCross(matrix,i,j,k,l):
     else:
         return False
 
-def AdjacentCross_List(matrix,i,j,number):
-    cross = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+def AdjacentCross_List(matrix,x,y,number):
+    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
     liste = []
     xmax,ymax = matrix.shape
-    for x,y in cross:
-        if x < xmax and y < ymax:
-            liste.append((x,y))
+    for (i,j) in cross:
+        if i < xmax and j < ymax:
+            if matrix[i][j] == number:
+                liste.append((i,j))
     return liste
 
-def AdjacentCross2_List(matrix,i,j,number):
-    cross = [(i-2,j),(i+2,j),(i,j-2),(i,j+2)]
+def AdjacentCross2_List(matrix,x,y,number):
+    cross = [(x-2,y),(x+2,y),(x,y-2),(x,y+2)]
     liste = []
     xmax,ymax = matrix.shape
-    for x,y in cross:
-        if x < xmax and y < ymax:
-            if matrix[x][y] == number:
-                liste.append((x,y))
+    for (i,j) in cross:
+        if i >= 0 and i < xmax and j >= 0 and j < ymax:
+            if matrix[i][j] == number:
+                liste.append((i,j))
     return liste
 
 
@@ -104,7 +105,7 @@ def ConstructMaze(tailleX,tailleY):
     run = 1
     
     while run != 0:
-        liste = CleanList(matrix,AdjacentCross_List(matrix,x,y),1)
+        liste = AdjacentCross2_List(matrix,x,y,0)
         if len(liste) == 0:
             x,y = stack[-1]
             stack.pop()
@@ -116,6 +117,7 @@ def ConstructMaze(tailleX,tailleY):
             matrix[xr][yr] = 1
             stack.append((xr,yr))
             x,y = xr,yr
+            
     x,y = matrix.shape
     for i in range(x):
         for j in range(y):
@@ -183,4 +185,5 @@ path = PathSearch(grille,mapping,0,2)
 
 print(MosaicMap(InitMap(10,10,-1)))
 
-print(ConstructMaze(10,10))
+maze = ConstructMaze(100,100)
+MatrixPrinting(maze)
