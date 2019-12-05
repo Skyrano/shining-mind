@@ -69,30 +69,44 @@ def AdjacentCross_List(matrix,i,j):
     return liste
 
 def CleanList(matrix,liste,number):
-    for i in range(len(liste)):
+    lenght = len(liste)
+    i = 0
+    while i < lenght:
         x,y = liste[i]
         if matrix[x][y] == number:
             del liste[i]
+            lenght -= 1
+        i += 1
+    return liste
 
 
 
 def ConstructMaze(tailleX,tailleY):
-    matrix = MosaicMap(tailleX,tailleY)
+    matrix = MosaicMap(InitMap(tailleX,tailleY,-1))
     stX,stY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
     while matrix[stX][stY] != 0:
         stX,stY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
     stack = [(stX,stY)]
     x,y = stX,stY
     matrix[x][y]=1
+    run = 1
     
-    liste = CleanList(matrix,AdjacentCross_List(matrix,x,y),1)
-    if len(liste) == 0:
-        pass
-    else:
-        xr,yr = random.choice(liste)
-        matrix[int(abs(xr-x)/2)][int(abs(yr-y))] = 1
-        matrix[xr][yr] = 1
-        stack.append((xr,yr))
+    while run != 0:
+        print(matrix)
+        liste = CleanList(matrix,AdjacentCross_List(matrix,x,y),1)
+        if len(liste) == 0:
+            x,y = stack[-1]
+            stack.pop()
+            if (x,y) == (stX,stY):
+                run = 0
+        else:
+            xr,yr = random.choice(liste)
+            matrix[int(abs(xr-x)/2)][int(abs(yr-y))] = 1
+            matrix[xr][yr] = 1
+            stack.append((xr,yr))
+            x,y = xr,yr
+            
+    return matrix
         
 
 
@@ -153,3 +167,5 @@ mapping = Dijkstra(grille,8,9)
 path = PathSearch(grille,mapping,0,2)
 
 print(MosaicMap(InitMap(10,10,-1)))
+
+ConstructMaze(10,10)
