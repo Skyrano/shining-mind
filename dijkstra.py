@@ -4,21 +4,26 @@
 
 import numpy
 import random
+from ImagesUtils import *
 
 
 def MatrixPrinting(matrix):
-    x,y = matrix.shape
-    for i in range(x):
-        for j in range(y):
+    tailleX,tailleY = matrix.shape
+    pixels = empty_img(tailleX, tailleY)
+    for i in range(tailleX):
+        for j in range(tailleY):
             if matrix[i][j] == -1:
-                print(1,end='')
+                pixels[i][j][0] = 255
             elif matrix[i][j] == 0:
-                print(0,end='')
-            else:
-                print(5,end='')
-            print(' ',end='')
-        print()
-
+                pixels[i][j][0] = 0
+            elif matrix[i][j] == -88:
+                pixels[i][j][1] = 255
+            elif matrix[i][j] == 1:
+                pixels[i][j][2] = 255
+                
+    write_img("Maze.bmp",pixels)
+    
+    
 def InitMap(tailleX,tailleY,number):
     matrix =  numpy.zeros((tailleX,tailleY), dtype = int)
     if number != 0:
@@ -59,6 +64,9 @@ def AdjacenceCross(matrix,i,j,k,l):
     else:
         return False
 
+
+
+
 def AdjacentCross_List(matrix,x,y,number):
     cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
     liste = []
@@ -68,6 +76,17 @@ def AdjacentCross_List(matrix,x,y,number):
             if matrix[i][j] == number:
                 liste.append((i,j))
     return liste
+
+
+def AdjacentCross_TotalList(matrix,x,y):
+    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
+    liste = []
+    xmax,ymax = matrix.shape
+    for (i,j) in cross:
+        if i < xmax and j < ymax:
+            liste.append((i,j))
+    return liste
+
 
 def AdjacentCross2_List(matrix,x,y,number):
     cross = [(x-2,y),(x+2,y),(x,y-2),(x,y+2)]
@@ -95,6 +114,10 @@ def CleanList(matrix,liste,number):
 
 
 def ConstructMaze(tailleX,tailleY):
+    if tailleX%2 == 0:
+        tailleX += 1
+    if tailleY%2 == 0:
+        tailleY += 1
     matrix = MosaicMap(InitMap(tailleX,tailleY,-1))
     stX,stY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
     while matrix[stX][stY] != 0:
@@ -117,12 +140,13 @@ def ConstructMaze(tailleX,tailleY):
             matrix[xr][yr] = 1
             stack.append((xr,yr))
             x,y = xr,yr
-            
+           
     x,y = matrix.shape
     for i in range(x):
         for j in range(y):
             if matrix[i][j] == 1:
-                matrix[i][j] = 0            
+                matrix[i][j] = 0 
+                        
     return matrix
         
 
@@ -142,48 +166,54 @@ def InitMurs(matrix,murs):
         matrix[i][j] = -1
     return matrix
 
-def Dijkstra(grille,goalX,goalY):
+
+def Dijkstra(grille):
+    x,y = grille.shape
+    stX,stY = random.randint(0,x-1), random.randint(0,y-1)
+    while grille[stX][stY] != 0:
+        stX,stY = random.randint(0,x-1), random.randint(0,y-1)
     counter = 1
     matrix = numpy.copy(grille)
-    matrix[goalX][goalY] = counter
-    x,y = matrix.shape
-    while MatrixCount(matrix,0) > 0 :
-        for i in range(x):
-            for j in range(y):
-                if matrix[i][j] == counter:
-                    for k,l in Adjacent_List(matrix,i,j):
-                        if matrix[k][l] == 0:
-                            matrix[k][l] = counter+1 
+    matrix[stX][stY] = counter
+    zeros = MatrixCount(matrix,0)
+    liste = [(stX,stY)]
+    liste_next = []
+    while zeros > 0 :
+        for (i,j) in liste:
+            for k,l in AdjacentCross_List(matrix,i,j,0):
+                    matrix[k][l] = counter+1
+                    zeros -= 1
+                    liste_next.append((k,l))
         counter += 1
+        liste = liste_next
+        liste_next = []
     return matrix
 
 
-def PathSearch(grille,mapping,x,y):
+def Pathfinding(grille,mapping,x,y):
     minimum = mapping[x][y]
     trace = -88
     matrix = numpy.copy(grille)
     while mapping[x][y] != 1:
-        for k,l in Adjacent_List(mapping,x,y):
+        for k,l in AdjacentCross_TotalList(mapping,x,y):
             if mapping[k][l] < mapping[x][y] and mapping[k,l] not in {trace,-1}:
                 minimum = mapping[k][l]
                 x_next,y_next = k,l
         matrix[x][y] = trace
         x,y = x_next,y_next
-    matrix[x][y] = trace
+    matrix[x][y] = 1
     return matrix    
 
 
 
-murs = [(7,5),(6,5),(5,5),(1,0),(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(4,11),(4,10),(4,9),(4,8),(4,7),(4,6),(4,5)]
-grille = InitMap(10,12,0)
-grille = InitMurs(grille,murs)
-print(grille)
 
+maze = ConstructMaze(500,500)
+print("Maze : ",maze)
 
-mapping = Dijkstra(grille,8,9)
-path = PathSearch(grille,mapping,0,2)
+mapping = (Dijkstra(maze))
+print("Mappinp : ",mapping)
 
-print(MosaicMap(InitMap(10,10,-1)))
+path = Pathfinding(maze,mapping,1,1)
+print("Path : ",path)
 
-maze = ConstructMaze(100,100)
-MatrixPrinting(maze)
+MatrixPrinting(path)
