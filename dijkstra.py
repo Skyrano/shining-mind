@@ -54,19 +54,30 @@ def Adjacent_List(matrix,i,j):
 
 
 def AdjacenceCross(matrix,i,j,k,l):
-    if (abs(i-k) == 2 and abs(j-l) == 0) or (abs(i-k) == 0 and abs(j-l) == 2):
+    if (abs(i-k) == 1 and abs(j-l) == 0) or (abs(i-k) == 0 and abs(j-l) == 1):
         return True
     else:
         return False
 
-def AdjacentCross_List(matrix,i,j):
+def AdjacentCross_List(matrix,i,j,number):
+    cross = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
     liste = []
-    x,y = matrix.shape
-    for k in range(x):
-        for l in range(y):
-            if AdjacenceCross(matrix,i,j,k,l):
-                liste.append((k,l))
+    xmax,ymax = matrix.shape
+    for x,y in cross:
+        if x < xmax and y < ymax:
+            liste.append((x,y))
     return liste
+
+def AdjacentCross2_List(matrix,i,j,number):
+    cross = [(i-2,j),(i+2,j),(i,j-2),(i,j+2)]
+    liste = []
+    xmax,ymax = matrix.shape
+    for x,y in cross:
+        if x < xmax and y < ymax:
+            if matrix[x][y] == number:
+                liste.append((x,y))
+    return liste
+
 
 def CleanList(matrix,liste,number):
     lenght = len(liste)
@@ -76,7 +87,8 @@ def CleanList(matrix,liste,number):
         if matrix[x][y] == number:
             del liste[i]
             lenght -= 1
-        i += 1
+        else:
+            i += 1
     return liste
 
 
@@ -92,7 +104,6 @@ def ConstructMaze(tailleX,tailleY):
     run = 1
     
     while run != 0:
-        print(matrix)
         liste = CleanList(matrix,AdjacentCross_List(matrix,x,y),1)
         if len(liste) == 0:
             x,y = stack[-1]
@@ -101,11 +112,15 @@ def ConstructMaze(tailleX,tailleY):
                 run = 0
         else:
             xr,yr = random.choice(liste)
-            matrix[int(abs(xr-x)/2)][int(abs(yr-y))] = 1
+            matrix[int((xr+x)/2)][int((yr+y)/2)] = 1
             matrix[xr][yr] = 1
             stack.append((xr,yr))
             x,y = xr,yr
-            
+    x,y = matrix.shape
+    for i in range(x):
+        for j in range(y):
+            if matrix[i][j] == 1:
+                matrix[i][j] = 0            
     return matrix
         
 
@@ -168,4 +183,4 @@ path = PathSearch(grille,mapping,0,2)
 
 print(MosaicMap(InitMap(10,10,-1)))
 
-ConstructMaze(10,10)
+print(ConstructMaze(10,10))
