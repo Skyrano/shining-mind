@@ -211,7 +211,7 @@ def Pathfinding(grille,mapping,x,y):
 
 
 
-maze,zeros = ConstructMaze(10000,10000)
+maze,zeros = ConstructMaze(500,500)
 print("Maze : ",maze)
 
 mapping = Dijkstra(maze,zeros)
