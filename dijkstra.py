@@ -12,14 +12,16 @@ def MatrixPrinting(matrix):
     pixels = empty_img(tailleX, tailleY)
     for i in range(tailleX):
         for j in range(tailleY):
-            if matrix[i][j] == -1:
+            if matrix[i][j] == 0:
+                pass
+            elif matrix[i][j] == -1:
                 pixels[i][j][0] = 255
-            elif matrix[i][j] == 0:
-                pixels[i][j][0] = 0
             elif matrix[i][j] == -88:
                 pixels[i][j][1] = 255
             elif matrix[i][j] == 1:
                 pixels[i][j][2] = 255
+            else:
+                pixels[i][j][1] = int(matrix[i][j]/1000)
                 
     write_img("Maze.bmp",pixels)
     
@@ -32,13 +34,14 @@ def InitMap(tailleX,tailleY,number):
                 matrix[i][j] = number
     return matrix
 
-def MosaicMap(matrix):
-    mosaic = numpy.copy(matrix)
-    x,y = mosaic.shape
-    for i in range(x):
-        for j in range(y):
-            if i%2 != 0 and j%2 != 0:
-                mosaic[i][j] = 0
+def MosaicMap(tailleX,tailleY):
+    mosaic =  numpy.zeros((tailleX,tailleY), dtype = int)
+    for i in range(tailleX):
+        for j in range(tailleY):
+            if i%2 == 0 or j%2 == 0:
+                mosaic[i][j] = -1
+            else:
+                mosaic[i][j] = 1
     return mosaic
         
 
@@ -67,35 +70,40 @@ def AdjacenceCross(matrix,i,j,k,l):
 
 
 
-def AdjacentCross_List(matrix,x,y,number):
+def AdjacentCross_List(matrix,x,y,number,xmax,ymax):
     cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
     liste = []
-    xmax,ymax = matrix.shape
-    for (i,j) in cross:
-        if i < xmax and j < ymax:
-            if matrix[i][j] == number:
-                liste.append((i,j))
-    return liste
-
-
-def AdjacentCross_TotalList(matrix,x,y):
-    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
-    liste = []
-    xmax,ymax = matrix.shape
-    for (i,j) in cross:
-        if i < xmax and j < ymax:
-            liste.append((i,j))
-    return liste
-
-
-def AdjacentCross2_List(matrix,x,y,number):
-    cross = [(x-2,y),(x+2,y),(x,y-2),(x,y+2)]
-    liste = []
-    xmax,ymax = matrix.shape
     for (i,j) in cross:
         if i >= 0 and i < xmax and j >= 0 and j < ymax:
             if matrix[i][j] == number:
                 liste.append((i,j))
+    return liste
+
+
+def AdjacentCross2_List(matrix,x,y,number,xmax,ymax):
+    cross = [(x-2,y),(x+2,y),(x,y-2),(x,y+2)]
+    liste = []
+    for (i,j) in cross:
+        if i >= 0 and i < xmax and j >= 0 and j < ymax:
+            if matrix[i][j] == number:
+                liste.append((i,j))
+    return liste
+
+
+def AdjacentCrossBrut_List(matrix,x,y,number):
+    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
+    liste = []
+    for (i,j) in cross:
+        if matrix[i][j] == number:
+            liste.append((i,j))
+    return liste
+
+
+def AdjacentCrossBrut_TotalList(matrix,x,y):
+    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
+    liste = []
+    for (i,j) in cross:
+        liste.append((i,j))
     return liste
 
 
@@ -112,10 +120,10 @@ def CleanList(matrix,liste,number):
     return liste
 
 
-def RandomCoord(matrix):
+def RandomCoord(matrix,number):
     tailleX,tailleY = matrix.shape
     rdX,rdY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
-    while matrix[rdX][rdY] != 0:
+    while matrix[rdX][rdY] != number:
         rdX,rdY = random.randint(0,tailleX-1), random.randint(0,tailleY-1)
     return rdX,rdY
 
@@ -125,15 +133,15 @@ def ConstructMaze(tailleX,tailleY):
         tailleX += 1
     if tailleY%2 == 0:
         tailleY += 1
-    matrix = MosaicMap(InitMap(tailleX,tailleY,-1))
-    stX,stY = RandomCoord(matrix)
+    matrix = MosaicMap(tailleX,tailleY)
+    stX,stY = RandomCoord(matrix,1)
     stack = [(stX,stY)]
     x,y = stX,stY
-    matrix[x][y]=1
+    matrix[x][y] = 0
+    zeros = 1
     run = 1
-    
     while run != 0:
-        liste = AdjacentCross2_List(matrix,x,y,0)
+        liste = AdjacentCross2_List(matrix,x,y,1,tailleX,tailleY)
         if len(liste) == 0:
             x,y = stack[-1]
             stack.pop()
@@ -141,18 +149,13 @@ def ConstructMaze(tailleX,tailleY):
                 run = 0
         else:
             xr,yr = random.choice(liste)
-            matrix[int((xr+x)/2)][int((yr+y)/2)] = 1
-            matrix[xr][yr] = 1
+            matrix[int((xr+x)/2)][int((yr+y)/2)] = 0
+            matrix[xr][yr] = 0
+            zeros += 2
             stack.append((xr,yr))
             x,y = xr,yr
-           
-    x,y = matrix.shape
-    for i in range(x):
-        for j in range(y):
-            if matrix[i][j] == 1:
-                matrix[i][j] = 0 
-                        
-    return matrix
+                
+    return matrix,zeros
         
 
 
@@ -172,17 +175,17 @@ def InitMurs(matrix,murs):
     return matrix
 
 
-def Dijkstra(grille):
+def Dijkstra(grille,zeros):
     counter = 1
     matrix = numpy.copy(grille)
-    stX,stY = RandomCoord(matrix)
+    stX,stY = RandomCoord(matrix,0)
     matrix[stX][stY] = counter
-    zeros = MatrixCount(matrix,0)
+    zeros -= 1
     liste = [(stX,stY)]
     liste_next = []
     while zeros > 0 :
         for (i,j) in liste:
-            for k,l in AdjacentCross_List(matrix,i,j,0):
+            for k,l in AdjacentCrossBrut_List(matrix,i,j,0):
                     matrix[k][l] = counter+1
                     zeros -= 1
                     liste_next.append((k,l))
@@ -197,25 +200,25 @@ def Pathfinding(grille,mapping,x,y):
     trace = -88
     matrix = numpy.copy(grille)
     while mapping[x][y] != 1:
-        for k,l in AdjacentCross_TotalList(mapping,x,y):
+        for k,l in AdjacentCrossBrut_TotalList(mapping,x,y):
             if mapping[k][l] < mapping[x][y] and mapping[k,l] not in {trace,-1}:
                 minimum = mapping[k][l]
                 x_next,y_next = k,l
         matrix[x][y] = trace
         x,y = x_next,y_next
     matrix[x][y] = 1
-    return matrix   
+    return matrix
 
 
 
-
-maze = ConstructMaze(500,500)
+maze,zeros = ConstructMaze(10000,10000)
 print("Maze : ",maze)
 
-mapping = (Dijkstra(maze))
-print("Mappinp : ",mapping)
+mapping = Dijkstra(maze,zeros)
+print("Mapping : ",mapping)
 
-x,y = RandomCoord(maze)
+
+x,y = RandomCoord(maze,0)
 path = Pathfinding(maze,mapping,x,y)
 print("Path : ",path)
 
