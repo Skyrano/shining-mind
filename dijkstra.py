@@ -132,6 +132,7 @@ def ConstructMaze(tailleX,tailleY):
     if tailleY%2 == 0:
         tailleY += 1
     matrix = MosaicMap(tailleX,tailleY)
+    print("Mosaic : {} secondes".format(int(time.time() - start)))
     stX,stY = RandomCoord(matrix,1)
     stack = [(stX,stY)]
     x,y = stX,stY
