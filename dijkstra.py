@@ -185,10 +185,11 @@ def Dijkstra(grille,zeros):
     liste_next = []
     while zeros > 0 :
         for (i,j) in liste:
-            for k,l in AdjacentCrossBrut_List(matrix,i,j,0):
-                    matrix[k][l] = counter+1
-                    zeros -= 1
-                    liste_next.append((k,l))
+            for k,l in [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]:   #AdjacentCrossBrut_List(matrix,i,j,0):
+                    if matrix[k][l] == 0:
+                        matrix[k][l] = counter+1
+                        zeros -= 1
+                        liste_next.append((k,l))
         counter += 1
         liste = liste_next
         liste_next = []
@@ -200,8 +201,8 @@ def Pathfinding(grille,mapping,x,y):
     trace = -88
     matrix = numpy.copy(grille)
     while mapping[x][y] != 1:
-        for k,l in AdjacentCrossBrut_TotalList(mapping,x,y):
-            if mapping[k][l] < mapping[x][y] and mapping[k,l] not in {trace,-1}:
+        for k,l in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:       #AdjacentCrossBrut_TotalList(mapping,x,y):
+            if mapping[k][l] < mapping[x][y] and mapping[k,l] not in [trace,-1]:
                 minimum = mapping[k][l]
                 x_next,y_next = k,l
         matrix[x][y] = trace
@@ -211,7 +212,7 @@ def Pathfinding(grille,mapping,x,y):
 
 
 
-maze,zeros = ConstructMaze(500,500)
+maze,zeros = ConstructMaze(1000,1000)
 print("Maze : ",maze)
 
 mapping = Dijkstra(maze,zeros)
