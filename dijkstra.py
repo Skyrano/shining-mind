@@ -35,6 +35,7 @@ def InitMap(tailleX,tailleY,number):
                 matrix[i][j] = number
     return matrix
 
+
 def MosaicMap(tailleX,tailleY):
     mosaic =  numpy.zeros((tailleX,tailleY), dtype = int)
     for i in range(tailleX):
@@ -101,11 +102,7 @@ def AdjacentCrossBrut_List(matrix,x,y,number):
 
 
 def AdjacentCrossBrut_TotalList(matrix,x,y):
-    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
-    liste = []
-    for (i,j) in cross:
-        liste.append((i,j))
-    return liste
+    return [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
 
 
 def CleanList(matrix,liste,number):
@@ -186,8 +183,8 @@ def Dijkstra(grille,zeros):
     liste_next = []
     while zeros > 0 :
         for (i,j) in liste:
-            for k,l in [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]:   #AdjacentCrossBrut_List(matrix,i,j,0):
-                    if matrix[k][l] == 0:
+            for k,l in [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]:   #AdjacentCrossBrut_List(matrix,i,j,0)  ou  AdjacentCrossBrut_TotalList(matrix,i,j)
+                    if matrix[k][l] == 0:           #enlever si 2eme option
                         matrix[k][l] = counter+1
                         zeros -= 1
                         liste_next.append((k,l))
@@ -202,7 +199,7 @@ def Pathfinding(grille,mapping,x,y):
     trace = -88
     matrix = numpy.copy(grille)
     while mapping[x][y] != 1:
-        for k,l in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:       #AdjacentCrossBrut_TotalList(mapping,x,y):
+        for k,l in [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]:       #AdjacentCrossBrut_TotalList(mapping,x,y)
             if mapping[k][l] < mapping[x][y] and mapping[k,l] not in [trace,-1]:
                 minimum = mapping[k][l]
                 x_next,y_next = k,l
@@ -215,7 +212,7 @@ def Pathfinding(grille,mapping,x,y):
 start = int(time.time())
 print("Start : {} secondes".format(start))
 
-maze,zeros = ConstructMaze(1000,1000)
+maze,zeros = ConstructMaze(10000,10000)
 print("Maze : {} secondes".format(int(time.time() - start)))
 print(maze)
 
@@ -228,5 +225,5 @@ path = Pathfinding(maze,mapping,x,y)
 print("Path : {} secondes".format(int(time.time() - start)))
 print(path)
 
-MatrixPrinting(path)
+MatrixPrinting(mapping)
 print("Printed : {} secondes".format(int(time.time() - start)))
