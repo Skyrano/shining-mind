@@ -4,6 +4,7 @@
 
 import numpy
 import random
+import time
 from ImagesUtils import *
 
 
@@ -211,16 +212,21 @@ def Pathfinding(grille,mapping,x,y):
     return matrix
 
 
+start = int(time.time())
+print("Start : {} secondes".format(start))
 
 maze,zeros = ConstructMaze(1000,1000)
-print("Maze : ",maze)
+print("Maze : {} secondes".format(int(time.time() - start)))
+print(maze)
 
 mapping = Dijkstra(maze,zeros)
-print("Mapping : ",mapping)
-
+print("Mapping : {} secondes".format(int(time.time() - start)))
+print(mapping)
 
 x,y = RandomCoord(maze,0)
 path = Pathfinding(maze,mapping,x,y)
-print("Path : ",path)
+print("Path : {} secondes".format(int(time.time() - start)))
+print(path)
 
 MatrixPrinting(path)
+print("Printed : {} secondes".format(int(time.time() - start)))
