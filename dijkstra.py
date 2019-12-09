@@ -8,7 +8,7 @@ import time
 from ImagesUtils import *
 
 
-def MatrixPrinting(matrix):
+def MatrixPrinting(matrix,filename):
     tailleX,tailleY = matrix.shape
     pixels = empty_img(tailleX, tailleY)
     for i in range(tailleX):
@@ -21,10 +21,16 @@ def MatrixPrinting(matrix):
                 pixels[i][j][1] = 255
             elif matrix[i][j] == 1:
                 pixels[i][j][2] = 255
+            elif matrix[i][j] == 2:
+                pixels[i][j][1] = 255
+                pixels[i][j][2] = 255
+            elif matrix[i][j] == 3:
+                pixels[i][j][0] = 255
+                pixels[i][j][1] = 255
             else:
                 pixels[i][j][1] = int(matrix[i][j]/1000)
                 
-    write_img("Maze.bmp",pixels)
+    write_img(filename,pixels)
     
     
 def InitMap(tailleX,tailleY,number):
@@ -132,7 +138,7 @@ def ConstructMaze(tailleX,tailleY):
     if tailleY%2 == 0:
         tailleY += 1
     matrix = MosaicMap(tailleX,tailleY)
-    print("Mosaic : {} secondes".format(int(time.time() - start)))
+    #print("Mosaic : {} secondes".format(int(time.time() - start)))
     stX,stY = RandomCoord(matrix,1)
     stack = [(stX,stY)]
     x,y = stX,stY
@@ -156,7 +162,6 @@ def ConstructMaze(tailleX,tailleY):
                 
     return matrix,zeros
         
-
 
 def MatrixCount(matrix, number):
     count = 0
@@ -209,7 +214,7 @@ def Pathfinding(grille,mapping,x,y):
     matrix[x][y] = 1
     return matrix
 
-
+"""
 start = int(time.time())
 print("Start : {} secondes".format(start))
 
@@ -226,5 +231,6 @@ path = Pathfinding(maze,mapping,x,y)
 print("Path : {} secondes".format(int(time.time() - start)))
 print(path)
 
-MatrixPrinting(mapping)
+MatrixPrinting("Maze.bmp",mapping)
 print("Printed : {} secondes".format(int(time.time() - start)))
+"""
