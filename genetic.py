@@ -41,7 +41,7 @@ def InitalPop(matrix,number,length,stX,stY):
     return population
 
 def Fitness(matrix,path,endX,endY):
-    
+    pass
     
     
     
