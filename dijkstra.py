@@ -79,7 +79,7 @@ def AdjacenceCross(matrix,i,j,k,l):
 
 
 def AdjacentCross_List(matrix,x,y,number,xmax,ymax):
-    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
+    cross = [(x-1,y),(x,y-1),(x+1,y),(x,y+1)]   #haut gauche bas droite
     liste = []
     for (i,j) in cross:
         if i >= 0 and i < xmax and j >= 0 and j < ymax:
