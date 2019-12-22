@@ -15,16 +15,16 @@ def MatrixPrinting(matrix,filename):
         for j in range(tailleY):
             if matrix[i][j] == 0:
                 pass
-            elif matrix[i][j] == -1:
+            elif matrix[i][j] == -1:    #correspond à un mur
                 pixels[i][j][0] = 255
-            elif matrix[i][j] == -88:
+            elif matrix[i][j] == -88:   #correspond au tracé de la trajectoire
                 pixels[i][j][1] = 255
-            elif matrix[i][j] == 1:
+            elif matrix[i][j] == 1:     #correspond à la sortie
                 pixels[i][j][2] = 255
-            elif matrix[i][j] == 2:
+            elif matrix[i][j] == 2:     #correspond au point de départ
                 pixels[i][j][1] = 255
                 pixels[i][j][2] = 255
-            elif matrix[i][j] == 3:
+            elif matrix[i][j] == 3:     #correspond au chemin d'un individu
                 pixels[i][j][0] = 255
                 pixels[i][j][1] = 255
             elif matrix[i][j]/10 < 255:
@@ -39,15 +39,7 @@ def MatrixPrinting(matrix,filename):
                 
     write_img(filename,pixels)
     
-"""
-def InitMap(tailleX,tailleY,number):
-    matrix =  numpy.zeros((tailleX,tailleY), dtype = int)
-    if number != 0:
-        for i in range(tailleX):
-            for j in range(tailleY):
-                matrix[i][j] = number
-    return matrix
-"""
+    
 #Cette fonction retourne une mosaique dans un tableau (alternance de 1 et -1)
 def MosaicMap(tailleX,tailleY):
     mosaic =  numpy.zeros((tailleX,tailleY), dtype = int)   #on utilise les matices de numpy pour gérer les tableaux de nombres (labyrinthes)
@@ -58,72 +50,8 @@ def MosaicMap(tailleX,tailleY):
             else:
                 mosaic[i][j] = 1
     return mosaic
-        
-"""
-def Adjacence(matrix,i,j,k,l):
-    if abs(i-k) <= 1 and abs(j-l) <= 1 and abs(i-k)+abs(j-l) in {1,2}:
-        return True
-    else:
-        return False
-"""
-"""
-def Adjacent_List(matrix,i,j):
-    liste = []
-    x,y = matrix.shape
-    for k in range(x):
-        for l in range(y):
-            if Adjacence(matrix,i,j,k,l):
-                liste.append((k,l))
-    return liste
-"""
-"""
-def AdjacenceCross(matrix,i,j,k,l):
-    if (abs(i-k) == 1 and abs(j-l) == 0) or (abs(i-k) == 0 and abs(j-l) == 1):
-        return True
-    else:
-        return False
-"""
-"""
-def AdjacentCross_List(matrix,x,y,number,xmax,ymax):
-    cross = [(x-1,y),(x,y-1),(x+1,y),(x,y+1)]
-    liste = []
-    for (i,j) in cross:
-        if i >= 0 and i < xmax and j >= 0 and j < ymax:
-            if matrix[i][j] == number:
-                liste.append((i,j))
-    return liste
-"""
-"""
-def AdjacentCross2_List(matrix,x,y,number,xmax,ymax):
-    cross = [(x-2,y),(x+2,y),(x,y-2),(x,y+2)]
-    liste = []
-    for (i,j) in cross:
-        if i >= 0 and i < xmax and j >= 0 and j < ymax:
-            if matrix[i][j] == number:
-                liste.append((i,j))
-    return liste
-"""
-"""
-def Adjacent_List(matrix,x,y,number,xmax,ymax):
-    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1),(x-1,y-1),(x-1,y+1),(x+1,y-1),(x+1,y+1)]
-    liste = []
-    for (i,j) in cross:
-        if i >= 0 and i < xmax and j >= 0 and j < ymax:
-            if matrix[i][j] == number:
-                liste.append((i,j))
-    return liste
-"""
-"""
-def Adjacent_ListNoRecur(matrix,x,y,number,xmax,ymax):
-    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1),(x-1,y-1),(x-1,y+1),(x+1,y-1),(x+1,y+1)]
-    liste = []
-    for (i,j) in cross:
-        if i >= 0 and i < xmax and j >= 0 and j < ymax:
-            if matrix[i][j] == number:
-                liste.append((i,j))
-    return liste
-"""
-
+ 
+ 
 #Cette fonction retourne les cases adjacentes (distance de 2 cases, ou un case sautée) d'une matrice en vérifiant si celles-ci contiennent la valeur voulue et si celles-ci sont dans les limites du tableau 
 #Cette fonction, contrairement à la suivante, ne vérifie pas les cases adjacente de la case testée 
 def Adjacent2_ListNoRecur(matrix,x,y,number,xmax,ymax):
@@ -147,15 +75,6 @@ def Adjacent2_List(matrix,x,y,number,xmax,ymax):
                 liste.append((i,j))
     return liste
 
-"""
-def AdjacentCrossBrut_List(matrix,x,y,number):
-    cross = [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
-    liste = []
-    for (i,j) in cross:
-        if matrix[i][j] == number:
-            liste.append((i,j))
-    return liste
-"""
 
 #Cette fonction retourne les cases adjacentes mais sans vérifier les limites du tableau (gain de vitesse) pour les cas ou cette verification est inutile
 def AdjacentBrut_List(matrix,x,y,number):
@@ -166,28 +85,11 @@ def AdjacentBrut_List(matrix,x,y,number):
             liste.append((i,j))
     return liste
 
-"""
-def AdjacentCrossBrut_TotalList(matrix,x,y):
-    return [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
-"""
 
 #Cette foncton retourne simplement la liste des cases adjacentes à la case demandée sans aucune vérification
 def AdjacentBrut_TotalList(matrix,x,y):
     return [(x-1,y),(x+1,y),(x,y-1),(x,y+1),(x-1,y-1),(x-1,y+1),(x+1,y-1),(x+1,y+1)]
 
-"""
-def CleanList(matrix,liste,number):
-    lenght = len(liste)
-    i = 0
-    while i < lenght:
-        x,y = liste[i]
-        if matrix[x][y] == number:
-            del liste[i]
-            lenght -= 1
-        else:
-            i += 1
-    return liste
-"""
 
 #Cette fonction retourne les coordonnées d'un point aléatoire dans une matrice avec une valeur de cases égale à un certain nombre
 def RandomCoord(matrix,number):
@@ -232,22 +134,6 @@ def ConstructMaze(tailleX,tailleY):
                 
     return matrix,zeros
         
-"""
-def MatrixCount(matrix, number):
-    count = 0
-    x,y = matrix.shape
-    for i in range(x):
-        for j in range(y):
-            if matrix[i][j] == number:
-                count += 1
-    return count
-"""
-"""
-def InitMurs(matrix,murs):
-    for i,j in murs:
-        matrix[i][j] = -1
-    return matrix
-"""
 
 #Cette fonction retourne le mapping Dijkstra d'un labyrinthe (distance par rapport à un point de départ defini aléatoirement)
 def Dijkstra(grille,zeros):
@@ -269,17 +155,18 @@ def Dijkstra(grille,zeros):
         liste_next = []
     return matrix
 
-#Cette 
+
+#Cette fonction donne le chemin le plus court pour aller à la sortie du labyrithe donné depuis les coordonnées données
 def Pathfinding(grille,mapping,x,y):
     minimum = mapping[x][y]
-    trace = -88
+    trace = -88     #on effectue le tracé de la trajectoire par le nombre -88
     matrix = numpy.copy(grille)
-    while mapping[x][y] != 1:
-        for k,l in AdjacentBrut_TotalList(mapping,x,y):
+    while mapping[x][y] != 1:   #tant que l'on a pas atteint le but
+        for k,l in AdjacentBrut_TotalList(mapping,x,y): #on cherche dans les cases adjacentes la valeur la plus faible
             if mapping[k][l] < mapping[x][y] and mapping[k,l] not in [trace,-1]:
                 minimum = mapping[k][l]
                 x_next,y_next = k,l
-        matrix[x][y] = trace
+        matrix[x][y] = trace    #on pose une marque et on passe à la case avec le minimum trouvé
         x,y = x_next,y_next
     matrix[x][y] = 1
     return matrix
