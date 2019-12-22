@@ -171,6 +171,26 @@ def TestPathNew(maze,path,stX,stY,endX,endY):
     return int(Distance(x,y,endX,endY) + len(path)/2)
 
 
+def TestPathBackward(maze,path,stX,stY,endX,endY):
+    matrix = maze.copy()
+    x,y = stX,stY
+    for i in range(len(path)):
+        if len(AdjacentCrossBrut_List(matrix,x,y,1)) != 0:
+            break
+        elif len(AdjacentCrossBrut_List(matrix,x,y,0)) == 0 and len(AdjacentCrossBrut_List(matrix,x,y,3)) == 1 and maze[x][y] != 2 and maze[x][y] != 1 and len(AdjacentCrossBrut_List(matrix,x,y,2)) == 0 and len(AdjacentCrossBrut_List(matrix,x,y,1)) == 0:
+            while len(AdjacentCrossBrut_List(matrix,x,y,0)) == 0 and len(AdjacentCrossBrut_List(matrix,x,y,3)) == 1 and maze[x][y] != 2 and maze[x][y] != 1 and len(AdjacentCrossBrut_List(matrix,x,y,2)) == 0 and len(AdjacentCrossBrut_List(matrix,x,y,1)) == 0:
+                maze[x][y] = -1
+                matrix[x][y] = -1
+                x,y = AdjacentCrossBrut_List(matrix,x,y,3)[0]
+            break
+        else:
+            nx,ny = DeplacementCross(path[i],x,y)
+            if maze[nx,ny] != -1:
+                x,y = nx,ny
+            matrix[x][y] = 3
+    return int(Distance(x,y,endX,endY) + len(path)/2)
+
+
 def InitalPop(matrix,number,length):
     population = []
     for i in range(number):
@@ -182,7 +202,7 @@ def TestPopulation(population,maze,stX,stY,endX,endY):
     fitness = []
     path_sorted = []
     for i in range(len(population)):
-        fitness,index = PutInList(TestPathNew(maze,population[i],stX,stY,endX,endY),fitness)
+        fitness,index = PutInList(TestPathBackward(maze,population[i],stX,stY,endX,endY),fitness)
         path_sorted.insert(index,population[i])
     return path_sorted,fitness
 
@@ -195,25 +215,22 @@ def Selection(population_tested, taux_select):
         path.append(population_tested[i])
     return path
 
-def Reproduction(population):
+
+def Reproduction(population,taux_natalite):
     path_coupled = []
-    i = 0
-    while len(population) > 1:
+    nata = int(taux_natalite*len(population))
+    for i in range(nata):
         cut = random.randint(int(0.4*len(population[0])),int(0.6*len(population[0])))
         path1 = random.choice(population)
         path2 = random.choice(population)
         while path2 == path1:
             path2 = random.choice(population)
         path_coupled.append(path1[:cut]+path2[cut:])
-        del population[population.index(path1)]
-        del population[population.index(path2)]
-        i += 1
     return path_coupled
 
 
 def MutationCross(population,taux_muta):
     muta = int(taux_muta*len(population))
-    print(muta)
     for i in range(muta):
         path = random.randint(0,len(population)-1)
         index = random.randint(0,len(population[path])-1)
@@ -221,7 +238,7 @@ def MutationCross(population,taux_muta):
     return population
 
 
-maze, zeros = ConstructMaze(100,100)
+maze, zeros = ConstructMaze(200,200)
 mapping = Dijkstra(maze,zeros)
 stX,stY = RandomCoord(maze,0)
 endX,endY = RandomCoord(maze,0)
@@ -232,16 +249,17 @@ print(endX,endY)
 
 
 MatrixPrinting(maze,"Maze.bmp")
-pop_init = InitalPop(maze,5,10)
+pop_init = InitalPop(maze,100,300)
 pop_ordered,fitness = TestPopulation(pop_init,maze,stX,stY,endX,endY)
 MatrixPrinting(maze,"Maze2.bmp")
-print(pop_ordered)
+print(len(pop_ordered))
 
 selection = Selection(pop_ordered,0.5)
-print(selection)
+print(len(selection))
 
-repro = Reproduction(selection)
-print(repro)
+repro = Reproduction(selection,1.0)
+print(len(repro))
 
 mutation = MutationCross(repro,0.5)
-print(mutation)
+print(len(mutation))
+
