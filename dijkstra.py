@@ -172,6 +172,9 @@ def Pathfinding(grille,mapping,x,y):
     return matrix
 
 
+#Ces lignes permettent de tester le code ci-dessus uniquement
+#Elles sont commentées par défaut car ce fichier est chargé par le fichier s'occupant de la génération des individus
+"""
 maze,zeros = ConstructMaze(300,300)
 print(maze)
 MatrixPrinting(maze,"Maze.bmp")
@@ -183,4 +186,5 @@ x,y = RandomCoord(maze,0)
 path = Pathfinding(maze,mapping,x,y)
 print(path)
 
-MatrixPrinting(mapping,"Maze2.bmp")
+MatrixPrinting(mapping,"Maze_mapping.bmp")
+"""
